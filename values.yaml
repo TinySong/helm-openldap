@@ -25,7 +25,8 @@ updateStrategy: {}
   #   partition: 1
 image:
   # From repository https://github.com/osixia/docker-openldap
-  repository: osixia/openldap
+  # 192.168.1.52 is private harbor
+  repository: 192.168.1.52/system_containers/openldap
   tag: 1.5.0
   pullPolicy: Always
   # pullSecret: harbor
@@ -39,7 +40,9 @@ existingSecret: ""
 
 # Settings for enabling TLS with custom certificate
 # need a secret with tls.crt, tls.key and ca.crt keys with associated files
-# Ref: https://kubernetes.io/docs/tasks/configmap-secret/managing-secret-using-kubectl/#create-a-secret
+# Ref:
+# https://kubernetes.io/docs/tasks/configmap-secret/managing-secret-using-kubectl/#create-a-secret
+# TODO: add custom TLS
 customTLS:
   enabled: false
   secret: ""  # The name of a kubernetes.io/tls type secret to use for TLS
@@ -49,13 +52,12 @@ extraLabels: {}
 podAnnotations: {}
 service:
   annotations: {}
-
   ldapPort: 389
   sslLdapPort: 636
 
   ## If service type NodePort, define the value here
-  #ldapPortNodePort:
-  #sslLdapPortNodePort:
+  ldapPortNodePort: 30389
+  sslLdapPortNodePort: 30636
   ## List of IP addresses at which the service is available
   ## Ref: https://kubernetes.io/docs/user-guide/services/#external-ips
   ##
@@ -63,18 +65,18 @@ service:
 
   #loadBalancerIP: 
   #loadBalancerSourceRanges: []
-  type: ClusterIP
+  type: NodePort
   sessionAffinity: None
 
 # Default configuration for openldap as environment variables. These get injected directly in the container.
 # Use the env variables from https://github.com/osixia/docker-openldap#beginner-guide
 env:
  LDAP_LOG_LEVEL: "256"
- LDAP_ORGANISATION: "Example Inc."
- LDAP_DOMAIN: "example.org"
+ LDAP_ORGANISATION: "TenxCloud Inc."
+ LDAP_DOMAIN: "tenxcloud.com"
  LDAP_READONLY_USER: "false"
- LDAP_READONLY_USER_USERNAME: "readonly"
- LDAP_READONLY_USER_PASSWORD: "readonly"
+ LDAP_READONLY_USER_USERNAME: "admin"
+ LDAP_READONLY_USER_PASSWORD: "Dream001$"
  LDAP_RFC2307BIS_SCHEMA: "false"
  LDAP_BACKEND: "mdb"
  LDAP_TLS: "true"
@@ -97,8 +99,8 @@ env:
 # Default Passwords to use, stored as a secret.
 # You can override these at install time with
 # helm install openldap --set openldap.adminPassword=<passwd>,openldap.configPassword=<passwd>
-adminPassword: Not@SecurePassw0rd
-configPassword: Not@SecurePassw0rd
+adminPassword: Dream001$
+configPassword: Dream001$
 
 # Custom openldap configuration files used to override default settings
 # customLdifFiles:
@@ -123,7 +125,7 @@ persistence:
   ##   set, choosing the default provisioner.  (gp2 on AWS, standard on
   ##   GKE, AWS & OpenStack)
   ##
-  # storageClass: "standard-singlewriter"
+  storageClass: "openebs-hostpath"
   # existingClaim: openldap-pvc
   accessModes:
     - ReadWriteOnce
@@ -172,8 +174,9 @@ test:
   image:
     repository: dduportal/bats
     tag: 0.4.0
+## TODO what is ltb-passwd  ?
 ltb-passwd:
-  enabled : true
+  enabled : false
   ingress:
     enabled: true
     annotations: {}
@@ -191,7 +194,7 @@ ltb-passwd:
 phpldapadmin:
   enabled: true
   ingress:
-    enabled: true
+    enabled: false
     annotations: {}
     path: /
     ## Ingress Host

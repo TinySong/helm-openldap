@@ -12,6 +12,9 @@ env:
 ## Number of phpLDAPadmin images
 replicaCount: 1
 
+## namespace where openldap deployed
+namespace: kube-system
+
 ## Set default image, imageTag, and imagePullPolicy. mode is used to indicate the
 ##
 image:

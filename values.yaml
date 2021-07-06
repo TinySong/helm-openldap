@@ -1,7 +1,7 @@
 # Default values for openldap.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
-
+namespace: kube-system
 replicaCount: 3
 updateStrategy: {}
   # When a StatefulSet's .spec.updateStrategy.type is set to OnDelete, 
@@ -51,6 +51,7 @@ extraLabels: {}
 ## Add additional annotations to pods
 podAnnotations: {}
 service:
+  namespace: kube-system
   annotations: {}
   ldapPort: 389
   sslLdapPort: 636
@@ -192,6 +193,7 @@ ltb-passwd:
     bindPWKey: LDAP_ADMIN_PASSWORD
 
 phpldapadmin:
+  namespace: kube-system
   enabled: true
   ingress:
     enabled: false

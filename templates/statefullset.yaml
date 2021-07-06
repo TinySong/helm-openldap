@@ -2,6 +2,7 @@ apiVersion: {{ template "statefulset.apiVersion" . }}
 kind: StatefulSet
 metadata:
   name:  {{ template "openldap.fullname" . }}
+  namespace: {{ .Values.namespace }}
   labels:
     app: {{ template "openldap.fullname" . }}
     chart: {{ template "openldap.chart" . }}
